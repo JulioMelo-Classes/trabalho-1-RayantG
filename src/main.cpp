@@ -33,6 +33,7 @@ void game(Forca p2)
     char letra;
     bool tentativa;
     int erros = tenta;
+    vector<char> andamento;
     switch(erros)
     {
         case 6:
@@ -67,19 +68,32 @@ void game(Forca p2)
         break;
         case 0:
             cout << "Game Over! " << endl;
-            //p2.game_over(p2);
-        break; 
+            string palavrinha = p2.get_palavra_atual();
+            cout << "A palavra era :" << palavrinha << endl;
+            p2.game_over(p2);
+        break;
     }
-    p2.get_progresso();
-    cout << " Digite uma letra" << endl;
-    cin >> letra;
-    tentativa = p2.palpite(letra, p2);
-    if(tentativa)
+    
+    if(erros>0)
     {
+      andamento = p2.get_progresso();
+      for(int i=0;i<andamento.size();i++)
+      {
+      cout << andamento.at(i);
+      cout << " ";
+      }
+      cout << endl;
+      cout << " Digite uma letra" << endl;
+      cin >> letra;
+      tentativa = p2.palpite(letra);
+      if(tentativa)
+      {
         p2.set_tentativas_restantes(tenta);
-    }
+      }
     //p2.checa_vitoria(p2);
     game(p2);
+  }
+    
 }
 
 
@@ -104,31 +118,15 @@ int main(int argc, char* argv[])
         points.push_back(pegascores);
     }
     Forca p(words, points);
-    p.eh_valido();
+    p.proxima_palavra(0);
     p.criar_progresso();
+    p.eh_valido();
     inicio(p);
-    vector<char> ajuda = p.get_progresso();
-    for(int i=0; i<ajuda.size();i++)
-            {
-                cout << ajuda.at(i);
-            }
-    /*
-    
     dif = p.get_dificuldade();
     if(dif<=2)
     {
       game(p);
     }
-    
-    jogarnovamente = p.get_tentativas_restantes();
-    if(jogarnovamente>0)
-    {
-      inicio(p);
-    }
-    else
-    {
-      exit(EXIT_SUCCESS);
-    }
-    */
 }
+
 

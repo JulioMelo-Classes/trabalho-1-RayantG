@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vector>
- 
+#include <cstdlib>
+#include <ctime>
+
+
 class Forca {    
     private:
         //TODO: armazenar os scores?\
@@ -113,43 +116,47 @@ class Forca {
          */
         void proxima_palavra(int d)
         {
-          
+          srand(time(0));
+          int aleatorio;
           switch(d)
           {
             case 0:
-              srand(10);
-                for(int i=0; i<toda_palavra.size(); i++)
-                  {
-                    if(i%2==0 && i<15)
-                    {
-                        palavra_atual = toda_palavra.at(i);
-                        break;
-                    }   
-                  }; break;
-                case 1:
-                    srand(10);
-                    for(int i=0; i<toda_palavra.size(); i++)
-                    {
-                        if(i%2==0 && contadificil<3 && i>=15)
+                aleatorio = rand()%40;
+                      if(aleatorio%2==0)
+                      {
+                        palavra_atual = toda_palavra.at(aleatorio+1);
+                      }
+                      else
+                      {
+                        palavra_atual = toda_palavra.at(aleatorio);
+                      }; break;
+            case 1:
+               aleatorio = 30 + rand()%60;   
+                        if(aleatorio%2==0 && contadificil<3)
                         {
-                            palavra_atual = toda_palavra.at(i);
+                            palavra_atual = toda_palavra.at(aleatorio+1);
                             contadificil++;
                         }
-                        else if(i%2==0 && contadificil>=3)
+                        else if(aleatorio%2!=0 && contadificil<3)
                         {
-                            proxima_palavra(3);
+                          palavra_atual = toda_palavra.at(aleatorio);
+                          contadificil++;
                         }
-                    }; break;
+                        else
+                        {
+                            proxima_palavra(2);
+                        }; break;
                 case 2:
-                    srand(5);
-                    for(int i=0; i<toda_palavra.size(); i++)
-                    {
-                        if(i%2==0 && i>=25){
-                            palavra_atual = toda_palavra.at(i);
+                    aleatorio = 80 + rand()%60;
+                        if(aleatorio%2==0)
+                        {
+                          palavra_atual = toda_palavra.at(aleatorio+1);
                         }
-                    }; break;   
-          }
-
+                        else
+                        {
+                          palavra_atual = toda_palavra.at(aleatorio);
+                        }; break;   
+        }
         }
 
  
@@ -170,16 +177,16 @@ class Forca {
          * @param palpite uma letra, que deve ser testada se pertence à palavra.
          * @return T se a palpite pertence à palavra, F caso contrário.
          */
-        bool palpite(char letra, Forca z)
+        bool palpite(char letra)
         {
             int indice;
             bool erro=1;
-            for(int i=0; palavra_atual.size(); i++)
+            for(int i=0; i<palavra_atual.size(); i++)
             {
                 if(letra == palavra_atual.at(i))
                 {
                     erro = 0;
-                    set_progresso(i, z);
+                    set_progresso(i);
                 }
             }
             return erro;
@@ -193,7 +200,7 @@ class Forca {
           }
         }
 
-        void set_progresso(int index, Forca w)
+        void set_progresso(int index)
         {
             int vitoria=1;
             for(int i=0; i<progresso.size(); i++)
@@ -219,7 +226,7 @@ class Forca {
         {
             return progresso;
         }
-        /*
+        
         void checa_vitoria(Forca x)
         {
             int escolha;
@@ -241,13 +248,14 @@ class Forca {
             std::cout << "O que deseja fazer agora?" << std::endl;
             std::cout << "1 - Voltar ao menu" << std::endl;
             std::cout << "2 - Encerrar" << std::endl;
+            std::cin >> jogador; 
             switch(jogador)
             {
                 case 1: tentativas_restantes = 6; break;
                 case 2: std::cout << "Obrigado por jogar! :)" << std::endl; exit(EXIT_SUCCESS); break;
             }
         }
-        */
+        
         /**
          * Atualiza o número de tentativas restantes.
          * Este método é útil no caso do jogador escolher continuar o jogo.
