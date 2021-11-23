@@ -2,6 +2,8 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <string>
+#include <fstream>
 
 
 class Forca {    
@@ -27,6 +29,9 @@ class Forca {
          * @param scores o nome do arquivo que contém os scores
          * @see eh_valido
          */
+        int pontuacao = 0;
+        int jogardenovo = 0;
+        std::string nome;
         std::vector<std::string> toda_palavra;
         std::vector<std::string> pontos;
         Forca( std::vector<std::string> palavras, std::vector<std::string> scores)
@@ -59,8 +64,9 @@ class Forca {
                 {
                 for (std::size_t j = 0; j < toda_palavra[i].size(); j++)
                 {
+                  //||||for(auto f: toda_palavra)||||
                     
-                    if(toda_palavra[i][j] == '?' || toda_palavra[i][j] == '/' || toda_palavra[i][j] == '>')
+                  if(toda_palavra[i][j] == '?' || toda_palavra[i][j] == '/' || toda_palavra[i][j] == '>')
                     {
                     std::cout<<"Arquivo não aceito :(" << std::endl;
                     exit(EXIT_SUCCESS);
@@ -83,8 +89,9 @@ class Forca {
          * @param d a dificuldade desejada
          * @see proxima_palavra
          */
-        void set_dificuldade()
+        int set_dificuldade()
         {
+            int d;
             std::cout << "Escolha a sua dificuldade:" << std::endl;
             std::cout << "0 - Fácil" << std::endl;
             std::cout << "1 - Médio" << std::endl;
@@ -94,12 +101,7 @@ class Forca {
             {
               std::cin >> dificuldade;
             }
-            switch (dificuldade)
-            {
-                case 0: proxima_palavra(0); break;
-                case 1: proxima_palavra(1); break;
-                case 2: proxima_palavra(2); break;
-            }
+          return dificuldade;
         }
 
         unsigned int get_dificuldade()
@@ -114,9 +116,10 @@ class Forca {
          * letras que devem aparecer dependendo do nível de dificuldade.
          * @return a próxima palavra do conjunto de palavras disponível de acordo com a dificuldade atual.
          */
-        void proxima_palavra(int d)
+        bool proxima_palavra(int d)
         {
           srand(time(0));
+          bool espera=0;
           int aleatorio;
           switch(d)
           {
@@ -125,10 +128,12 @@ class Forca {
                       if(aleatorio%2==0)
                       {
                         palavra_atual = toda_palavra.at(aleatorio+1);
+                        espera = 1;
                       }
                       else
                       {
                         palavra_atual = toda_palavra.at(aleatorio);
+                        espera = 1;
                       }; break;
             case 1:
                aleatorio = 30 + rand()%60;   
@@ -136,27 +141,33 @@ class Forca {
                         {
                             palavra_atual = toda_palavra.at(aleatorio+1);
                             contadificil++;
+                            espera = 1;
                         }
                         else if(aleatorio%2!=0 && contadificil<3)
                         {
                           palavra_atual = toda_palavra.at(aleatorio);
                           contadificil++;
+                          espera = 1;
                         }
                         else
                         {
                             proxima_palavra(2);
                         }; break;
-                case 2:
+            case 2:
                     aleatorio = 80 + rand()%60;
                         if(aleatorio%2==0)
                         {
                           palavra_atual = toda_palavra.at(aleatorio+1);
+                          espera=1;
                         }
                         else
                         {
                           palavra_atual = toda_palavra.at(aleatorio);
+                          espera=1;
                         }; break;   
-        }
+            }
+            criar_progresso();
+            return espera;
         }
 
  
@@ -202,20 +213,7 @@ class Forca {
 
         void set_progresso(int index)
         {
-            int vitoria=1;
-            for(int i=0; i<progresso.size(); i++)
-            {
-                if(progresso.at(i) == '_')
-                {
-                    vitoria=0;
-                }
-            }
-            if(vitoria==1)
-            {
-                //checa_vitoria(w);
-            }
-            progresso.at(index) = palavra_atual.at(index);
-    
+              progresso.at(index) = palavra_atual.at(index);
         }
  
         /**
@@ -227,23 +225,40 @@ class Forca {
             return progresso;
         }
         
-        void checa_vitoria(Forca x)
+        bool checa_vitoria(Forca x)
         {
             int escolha;
-            std::cout << "Parabéns, você venceu!" << std::endl;
-            std::cout << "O que deseja fazer agora?" << std::endl;
-            std::cout << "1 - Jogar de novo" << std::endl;
-            std::cout << "2 - Encerrar" << std::endl;
-            switch(escolha)
+            bool rep = 1;
+
+            for(int i=0;i<palavra_atual.size();i++)
             {
-                case 1: return; break;
-                case 2: std::cout << "Obrigado por jogar! :)" << std::endl; exit(EXIT_SUCCESS); break;
+              if(progresso.at(i) != palavra_atual.at(i))
+              {
+                rep=0;
+              }
             }
+            if(rep==1)
+            {
+              std::cout << palavra_atual << std::endl;
+              std::cout << "Parabéns, você venceu!" << std::endl;
+              std::cout << "O que deseja fazer agora?" << std::endl;
+              std::cout << "1 - Voltar ao menu" << std::endl;
+              std::cout << "2 - Encerrar" << std::endl;
+              std::cin >> escolha;
+              switch(escolha)
+              {
+                  case 1: return rep; break;
+                  case 2: std::cout << "Obrigado por jogar! :)" << std::endl; exit(EXIT_SUCCESS); break;
+              }
+            }
+          set_pontos();
+          return rep;   
         }        
         
-        void game_over(Forca y)
+        bool game_over(Forca y)
         {
             int jogador;
+            bool escolha=0;
             std::cout << "você perdeu, que pena... :(" << std::endl;
             std::cout << "O que deseja fazer agora?" << std::endl;
             std::cout << "1 - Voltar ao menu" << std::endl;
@@ -251,9 +266,11 @@ class Forca {
             std::cin >> jogador; 
             switch(jogador)
             {
-                case 1: tentativas_restantes = 6; break;
+                case 1: tentativas_restantes = 6; escolha = 1; break;
                 case 2: std::cout << "Obrigado por jogar! :)" << std::endl; exit(EXIT_SUCCESS); break;
             }
+          set_pontos();
+          return escolha;
         }
         
         /**
@@ -273,6 +290,22 @@ class Forca {
         int get_tentativas_restantes()
         {
             return tentativas_restantes;
+        }
+
+        void set_pontos()
+        {
+          std::ofstream file("Scores.txt", std::ios::app);
+
+          switch (dificuldade)
+          {
+            case 0: file << "fácil; "; break;
+            case 1: file << "médio; "; break;
+            case 2: file << "difícil "; break;
+          }
+          file << nome << "; ";
+          file << pontuacao;
+            
+          file.close();
         }
  
 };

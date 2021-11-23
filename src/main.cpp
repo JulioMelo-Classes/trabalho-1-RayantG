@@ -2,13 +2,15 @@
 #include <fstream>
 #include <vector>
 #include <cstdlib>
-#include "/mnt/c/Users/Rayant/Downloads/Faculdade/Terceiro semestre/LP1/Trabalho 1/trabalho-1-RayantG/include/Forca.hpp"
+#include "Forca.hpp"
 using namespace std;
 
-
-void inicio(Forca p1)
+int inicio(Forca p1)
 {
     int input;
+    int output;
+    cout << "Digite seu nome" << endl;
+    cin >> p1.nome;
     cout << "Escolha o que quer fazer" << endl;
     cout << "1 - Jogar" << endl;
     cout << "2 - Ver os scores" << endl;
@@ -19,12 +21,13 @@ void inicio(Forca p1)
     }
     switch(input)
     {
-        case 1: p1.set_dificuldade(); break;
+        case 1: output = p1.set_dificuldade(); break;
         case 2: for(int i=0; i< p1.pontos.size(); i++)
                 {
                     cout << p1.pontos.at(i) << endl;
                 }; break;
     }
+  return output;
 }
 
 void game(Forca p2)
@@ -34,6 +37,8 @@ void game(Forca p2)
     bool tentativa;
     int erros = tenta;
     vector<char> andamento;
+    bool repetir;
+    bool fim;
     switch(erros)
     {
         case 6:
@@ -70,7 +75,11 @@ void game(Forca p2)
             cout << "Game Over! " << endl;
             string palavrinha = p2.get_palavra_atual();
             cout << "A palavra era :" << palavrinha << endl;
-            p2.game_over(p2);
+            fim = p2.game_over(p2);
+            if(fim)
+            {
+              inicio(p2);
+            }
         break;
     }
     
@@ -90,7 +99,11 @@ void game(Forca p2)
       {
         p2.set_tentativas_restantes(tenta);
       }
-    //p2.checa_vitoria(p2);
+    repetir = p2.checa_vitoria(p2);
+    if(repetir)
+    {
+      inicio(p2);
+    }
     game(p2);
   }
     
@@ -99,13 +112,12 @@ void game(Forca p2)
 
 int main(int argc, char* argv[])
 {
-    int indice;
-    int jogarnovamente;
-    int dif;
+    int d=3;
+    bool ajuda;
     vector<string> words;
     vector<string> points;
     ifstream arquivo_palavras("Palavras.txt");
-    ifstream arquivo_scores(argv[1]);
+    ifstream arquivo_scores("Scores.txt");
     string pegascores;
     string pegapalavras;
     
@@ -118,15 +130,13 @@ int main(int argc, char* argv[])
         points.push_back(pegascores);
     }
     Forca p(words, points);
-    p.proxima_palavra(0);
-    p.criar_progresso();
     p.eh_valido();
-    inicio(p);
-    dif = p.get_dificuldade();
-    if(dif<=2)
+    d = inicio(p);
+    ajuda = p.proxima_palavra(d);
+    if(ajuda)
     {
       game(p);
     }
+    
 }
-
 
