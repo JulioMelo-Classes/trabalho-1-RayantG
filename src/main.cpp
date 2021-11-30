@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <cstdlib>
-#include "Forca.hpp"
+#include "../include/Forca.hpp"
 using namespace std;
 
 int inicio(Forca p1)
@@ -116,8 +116,8 @@ int main(int argc, char* argv[])
     bool ajuda;
     vector<string> words;
     vector<string> points;
-    ifstream arquivo_palavras("Palavras.txt");
-    ifstream arquivo_scores("Scores.txt");
+    ifstream arquivo_palavras("../data/PalavrasForca.txt");
+    ifstream arquivo_scores("../data/Pontosjogo.txt");
     string pegascores;
     string pegapalavras;
     
